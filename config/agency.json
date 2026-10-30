@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "branding": {
+    "agency_name": "Aurelia",
+    "tagline": "Audit, improve, and prove website performance",
+    "logo_path": null,
+    "primary_color": "#4a3f66",
+    "secondary_color": "#b08d4a",
+    "font": "Inter",
+    "website": "",
+    "contact_email": "proposals@example.com",
+    "contact_phone": ""
+  },
+  "proposal": {
+    "introduction": "",
+    "payment_terms": "50% on acceptance, 50% on launch.",
+    "footer": "",
+    "disclaimer": "This proposal is valid for 30 days.",
+    "terms": "Work begins after written acceptance of the selected package."
+  },
+  "currency": "EUR",
+  "packages": {
+    "essentials": {
+      "name": "Essentials",
+      "price": 1500,
+      "duration_days": 10,
+      "summary": "Fix high and medium priority findings from the audit.",
+      "includes": [
+        "Technical SEO basics (titles, meta, headings, robots/sitemap)",
+        "HTTPS / SSL trust fixes in scope",
+        "Accessibility fixes for high-impact issues",
+        "Verification re-crawl and before/after summary"
+      ]
+    },
+    "growth": {
+      "name": "Growth",
+      "price": 3500,
+      "duration_days": 21,
+      "summary": "Essentials plus UX/content improvements and performance pass.",
+      "includes": [
+        "Everything in Essentials",
+        "Performance improvements for Core Web Vitals issues",
+        "Homepage messaging and conversion path polish",
+        "Content/SEO recommendations implementation support"
+      ]
+    },
+    "redesign": {
+      "name": "Redesign",
+      "price": 7500,
+      "duration_days": 35,
+      "summary": "Growth plus visual redesign direction and homepage rebuild.",
+      "includes": [
+        "Everything in Growth",
+        "Homepage redesign concepts and implementation",
+        "Mobile-first layout refresh",
+        "Launch QA and final verification crawl"
+      ]
+    }
+  },
+  "add_ons": {
+    "monitoring": {
+      "name": "Monthly monitoring",
+      "price": 250,
+      "summary": "Monthly re-crawl, score tracking, and findings diff report."
+    }
+  },
+  "out_of_scope_defaults": [
+    "Full custom application development",
+    "Paid ads management",
+    "Copywriting for the entire site (unless selected)",
+    "Hosting migration unless explicitly included"
+  ],
+  "recommended_package_default": "growth",
+  "methodology": "Turn website problems into priced projects.\nCluster technical noise into commercial opportunities before recommending packages.\nLead with conversion, positioning, and trust.\nHuman approves package and proposal before client send.\nClient language first \u2014 no crawl IDs, WCAG codes, or collector names.",
+  "agent": {
+    "enabled": true,
+    "use_ollama_for_advisory": true,
+    "prefer_fast_chat_model": true,
+    "prefer_fast_brain_model": true,
+    "profile_first_brain": true,
+    "brain_timeout_seconds": 45,
+    "chat_timeout_seconds": 40
+  }
+}

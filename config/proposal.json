@@ -1,0 +1,56 @@
+{
+  "company_name": "Aurelia",
+  "company_tagline": "Audit, improve, and prove website performance",
+  "contact_email": "proposals@example.com",
+  "currency": "EUR",
+  "packages": {
+    "essentials": {
+      "name": "Essentials",
+      "price": 1500,
+      "duration_days": 10,
+      "summary": "Fix high and medium priority findings from the audit.",
+      "includes": [
+        "Technical SEO basics (titles, meta, headings, robots/sitemap)",
+        "HTTPS / SSL trust fixes in scope",
+        "Accessibility fixes for high-impact issues",
+        "Verification re-crawl and before/after summary"
+      ]
+    },
+    "growth": {
+      "name": "Growth",
+      "price": 3500,
+      "duration_days": 21,
+      "summary": "Essentials plus UX/content improvements and performance pass.",
+      "includes": [
+        "Everything in Essentials",
+        "Performance improvements for Core Web Vitals issues",
+        "Homepage messaging and conversion path polish",
+        "Content/SEO recommendations implementation support"
+      ]
+    },
+    "redesign": {
+      "name": "Redesign",
+      "price": 7500,
+      "duration_days": 35,
+      "summary": "Growth plus visual redesign direction and homepage rebuild.",
+      "includes": [
+        "Everything in Growth",
+        "Homepage redesign concepts and implementation",
+        "Mobile-first layout refresh",
+        "Launch QA and final verification crawl"
+      ]
+    }
+  },
+  "monitoring": {
+    "name": "Monthly monitoring",
+    "price": 250,
+    "summary": "Monthly re-crawl, score tracking, and findings diff report."
+  },
+  "out_of_scope_defaults": [
+    "Full custom application development",
+    "Paid ads management",
+    "Copywriting for the entire site (unless selected)",
+    "Hosting migration unless explicitly included"
+  ],
+  "recommended_package_default": "growth"
+}

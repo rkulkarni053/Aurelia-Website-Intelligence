@@ -1,0 +1,103 @@
+{
+  "kind": "brain_recommendation",
+  "approved_example": true,
+  "industry": "saas_product",
+  "meta": {
+    "note": "Gold Brain answer for product / builder / SaaS sites",
+    "references": [
+      "https://www.base44.com/",
+      "https://contestudios.com/clarity-in-business-copywriting/"
+    ]
+  },
+  "after": {
+    "site_story_summary": {
+      "business_type": "Product / SaaS platform",
+      "audience": "Builders and operators who want to ship apps or sites without setup friction",
+      "story": "The product promises an end-to-end path: describe what you need, get a working result, iterate in chat, and go live without assembling a stack.",
+      "offer": "Build apps, websites, and agents from plain language",
+      "tone": "confident, product-led, clear",
+      "gaps": [
+        "Hero must state the outcome in one line",
+        "Features should map to jobs (ship, iterate, grow) not feature dumps"
+      ]
+    },
+    "executive_summary": "Strong product sites win when the first viewport answers: what I get, how fast, and what to click. Recommend a Growth engagement that tightens the outcome headline, groups capabilities into three jobs, and uses one primary CTA — modelled on high-converting builder product pages (outcome first, stack second, proof third).",
+    "priority_actions": [
+      {
+        "title": "Open with the outcome, not the category label",
+        "category": "content",
+        "impact": "high",
+        "effort": "low",
+        "why": "Buyers skim; category nouns (platform, solution) do not convert.",
+        "how": "Hero = what they can ship + timeframe feeling + one CTA (Start building / Get started).",
+        "opportunity_theme": "messaging"
+      },
+      {
+        "title": "Group features into three buyer jobs",
+        "category": "ux",
+        "impact": "high",
+        "effort": "medium",
+        "why": "Long feature grids blur; job-based sections (Build / Iterate / Grow) scan.",
+        "how": "Three sections with one sentence each and a supporting proof line.",
+        "opportunity_theme": "conversion"
+      },
+      {
+        "title": "Add social proof next to the CTA",
+        "category": "ux",
+        "impact": "medium",
+        "effort": "low",
+        "why": "Product pages convert when a founder quote or metric sits beside the ask.",
+        "how": "One metric + one short quote above the fold or under the hero CTA.",
+        "opportunity_theme": "trust"
+      }
+    ],
+    "quick_wins": [
+      "Rewrite hero as an outcome sentence",
+      "Single primary CTA; demote secondary links",
+      "Trim feature list to three job clusters"
+    ],
+    "strategic_improvements": [
+      "Product narrative: build → iterate in chat → go live",
+      "Pricing clarity with a free path and one paid upgrade story"
+    ],
+    "proposal_angles": [
+      "Growth: homepage conversion rewrite + CTA path + proof band without rebuilding the whole product site.",
+      "Essentials: titles, meta, and trust fixes if technical debt blocks credibility."
+    ],
+    "content_suggestions": [
+      {
+        "area": "Hero headline",
+        "current": "AI platform for everything",
+        "suggested": "Every builder needs a base — ship apps and sites from your own words.",
+        "why": "Outcome-led like strong product homepages; no vague platform language."
+      },
+      {
+        "area": "Hero subcopy",
+        "current": "All-in-one solution",
+        "suggested": "Describe what you want. Get a working stack — then iterate until it feels right.",
+        "why": "Explains the loop buyers actually buy."
+      },
+      {
+        "area": "Primary CTA",
+        "current": "Learn more",
+        "suggested": "Start building",
+        "why": "Specific action; Learn more is a conversion killer."
+      },
+      {
+        "area": "Services section",
+        "current": "Feature dump",
+        "suggested": "Apps · Websites · AI agents — each with one outcome sentence",
+        "why": "Job clusters beat infinite feature lists."
+      }
+    ],
+    "mockup_prompts": [
+      "Clean product homepage, outcome hero, Start building CTA, three job cards",
+      "Mobile product landing with proof metric under the CTA"
+    ],
+    "agent_next_steps": [
+      "Approve messaging opportunities",
+      "Design chat: rebuild hero with the suggested CTA",
+      "Recommend Growth when conversion path is the main gap"
+    ]
+  }
+}

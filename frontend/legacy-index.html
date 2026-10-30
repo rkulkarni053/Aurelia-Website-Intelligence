@@ -1,0 +1,3066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #151a1f;
+      --ink-soft: #3d4650;
+      --muted: #6b7582;
+      --line: #d5dde6;
+      --line-soft: #e8eef4;
+      --paper: #ffffff;
+      --wash: #eef3f7;
+      --wash-2: #e4edf2;
+      --accent: #0f766e;
+      --accent-deep: #0b5f59;
+      --accent-soft: #d7f0ed;
+      --high: #b42318;
+      --medium: #b54708;
+      --low: #087443;
+      --info: #175cd3;
+      --shadow: 0 1px 0 rgba(21, 26, 31, 0.04);
+      --radius: 14px;
+      --sidebar: 300px;
+      --font-display: "Syne", sans-serif;
+      --font-ui: "Manrope", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: var(--font-ui);
+      color: var(--ink);
+      background:
+        radial-gradient(1100px 520px at -10% -20%, #d9ebe8 0%, transparent 55%),
+        radial-gradient(900px 480px at 110% 0%, #dbe6f2 0%, transparent 50%),
+        linear-gradient(180deg, #f5f8fb 0%, var(--wash) 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: var(--sidebar) 1fr;
+      min-height: 100vh;
+      animation: fadeRise 0.55s ease both;
+    }
+
+    @keyframes fadeRise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+
+    /* Sidebar */
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: sticky;
+      top: 0;
+      max-height: 100vh;
+      animation: slideIn 0.5s ease both;
+    }
+
+    .brand {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #0f766e, #134e4a);
+      color: #ecfdf8;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.03em;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sidebar-section {
+      padding: 16px 14px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 10px;
+    }
+
+    .portfolio-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .portfolio-summary strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .portfolio-tree {
+      overflow: auto;
+      max-height: calc(100vh - 420px);
+      min-height: 180px;
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      background: var(--paper);
+    }
+
+    .portfolio-company { border-bottom: 1px solid var(--line-soft); }
+    .portfolio-company:last-child { border-bottom: none; }
+
+    .portfolio-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 10px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .portfolio-row.project { padding-left: 16px; background: #fafcfd; }
+    .portfolio-row.website { padding-left: 22px; }
+    .portfolio-row.crawl { padding-left: 28px; color: var(--ink-soft); font-size: 11px; }
+
+    .portfolio-row .meta {
+      color: var(--muted);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .portfolio-row button.link {
+      background: none;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 0;
+      font: inherit;
+      text-align: left;
+    }
+
+    .portfolio-row button.link:hover { color: var(--accent-deep); }
+
+    .portfolio-badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: var(--wash-2);
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .portfolio-badge.completed { background: #dcfae6; color: #067647; }
+    .portfolio-badge.failed { background: #fee4e2; color: #b42318; }
+    .portfolio-badge.running,
+    .portfolio-badge.queued { background: #d1e9ff; color: #175cd3; }
+
+    .onboard-panel {
+      padding: 14px;
+    }
+
+    .onboard-panel h3 {
+      margin: 0 0 4px;
+      font-family: var(--font-display);
+      font-size: 14px;
+    }
+
+    .onboard-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .onboard-form {
+      display: grid;
+      gap: 6px;
+    }
+
+    .onboard-form label,
+    .field-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .onboard-form input,
+    .picker-field select,
+    .design-chat-form input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--paper);
+      color: var(--ink);
+      padding: 9px 11px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .onboard-form input:focus,
+    .picker-field select:focus,
+    .design-chat-form input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+    }
+
+    /* Main */
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .topbar {
+      padding: 18px 28px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .site-title h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+
+    .website-url {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+    }
+
+    .status.completed .status-dot,
+    .status.awaiting_approval .status-dot { background: var(--accent); }
+    .status.running .status-dot,
+    .status.queued .status-dot,
+    .status.crawling .status-dot {
+      background: var(--info);
+      animation: pulseSoft 1.2s ease infinite;
+    }
+    .status.failed .status-dot { background: var(--high); }
+    .status.approved .status-dot,
+    .status.completed .status-dot { background: var(--low); }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 14px;
+      cursor: pointer;
+      background: var(--paper);
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 13px;
+      transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: #b7c4d0;
+      background: #fbfcfd;
+    }
+
+    .button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ecfdf8;
+    }
+
+    .button.primary:hover:not(:disabled) {
+      background: var(--accent-deep);
+      border-color: var(--accent-deep);
+    }
+
+    .button.small {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .picker-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+      gap: 10px;
+      margin-top: 14px;
+      align-items: end;
+    }
+
+    .picker-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .picker-field label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .picker-field select {
+      appearance: none;
+      background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position: calc(100% - 16px) 55%, calc(100% - 11px) 55%;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+      padding-right: 28px;
+    }
+
+    .workflow-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 160px;
+    }
+
+    .workspace {
+      padding: 22px 28px 48px;
+    }
+
+    .error {
+      display: none;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #fecdca;
+      background: #fef3f2;
+      color: #912018;
+      font-size: 13px;
+    }
+
+    .mode-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .mode-tab {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .mode-tab:hover { color: var(--ink); background: rgba(255,255,255,0.55); }
+
+    .mode-tab.active {
+      color: var(--accent-deep);
+      background: var(--accent-soft);
+      border-color: #b6e2dc;
+    }
+
+    .mode-panel { display: none; animation: fadeRise 0.35s ease both; }
+    .mode-panel.active { display: block; }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .card-subtitle, .meta-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric {
+      background: var(--paper);
+      padding: 16px 18px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .metric-value {
+      margin-top: 6px;
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .metric-note {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .score-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .score-item {
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid var(--line-soft);
+    }
+
+    .score-item .metric-value { font-size: 24px; }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 18px;
+    }
+
+    .surface {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .surface + .surface { margin-top: 16px; }
+
+    .detail-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .detail-list div {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .detail-list div:last-child { border-bottom: none; padding-bottom: 0; }
+    .detail-list span { color: var(--muted); }
+    .detail-list strong { font-weight: 700; }
+
+    .audit-layout {
+      display: grid;
+      grid-template-columns: 1.55fr 0.95fr;
+      gap: 18px;
+    }
+
+    .panel-body { min-height: 40px; }
+
+    .finding {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .finding:last-child { border-bottom: none; }
+
+    .finding-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .finding-title { font-weight: 700; font-size: 14px; }
+
+    .finding-description {
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .finding-meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    .severity {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .severity.high { background: #fee4e2; color: var(--high); }
+    .severity.medium { background: #fef0c7; color: var(--medium); }
+    .severity.low { background: #dcfae6; color: var(--low); }
+    .severity.info { background: #d1e9ff; color: var(--info); }
+
+    .breakdown { display: grid; gap: 10px; }
+
+    .breakdown-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 28px;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 99px;
+      background: var(--wash-2);
+      overflow: hidden;
+    }
+
+    .bar-fill { height: 100%; border-radius: 99px; }
+    .bar-high { background: var(--high); }
+    .bar-medium { background: var(--medium); }
+    .bar-low { background: var(--low); }
+    .bar-info { background: var(--info); }
+
+    .category-list { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .category {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: var(--wash);
+      font-size: 12px;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .comparison-card {
+      padding: 14px;
+      border-radius: 12px;
+      background: var(--wash);
+    }
+
+    .comparison-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .comparison-card .number {
+      margin-top: 6px;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .comparison-card.new { background: #fef3f2; }
+    .comparison-card.resolved { background: #ecfdf3; }
+    .comparison-card.unchanged { background: var(--wash); }
+
+    .annotated-grid,
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+
+    .annotated-card img,
+    .mockup-card img {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--wash);
+    }
+
+    .caption {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      word-break: break-all;
+    }
+
+    .design-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      min-height: 520px;
+    }
+
+    .design-chat-log {
+      max-height: 420px;
+      min-height: 280px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 12px 0 14px;
+      padding-right: 4px;
+    }
+
+    .chat-bubble {
+      max-width: 92%;
+      padding: 11px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .chat-bubble.user {
+      align-self: flex-end;
+      background: var(--accent-soft);
+      border: 1px solid #b6e2dc;
+    }
+
+    .chat-bubble.assistant {
+      align-self: flex-start;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      color: var(--ink-soft);
+    }
+
+    .design-chat-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    .design-chat-form input { flex: 1; }
+
+    .score-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .score-pill, .chip {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 8px;
+      background: var(--wash);
+      font-size: 11px;
+      font-weight: 650;
+      color: var(--ink-soft);
+    }
+
+    .chip.high { background: #fee4e2; color: var(--high); }
+    .chip.medium { background: #fef0c7; color: var(--medium); }
+    .chip.low { background: #dcfae6; color: var(--low); }
+
+    .rec-summary {
+      font-size: 14px;
+      line-height: 1.55;
+      margin-bottom: 16px;
+      color: var(--ink-soft);
+    }
+
+    .rec-action {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .rec-action:last-child { border-bottom: none; }
+
+    .rec-action-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .rec-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+
+    .rec-list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .proposal-meta {
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .proposal-markdown {
+      white-space: pre-wrap;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.55;
+      background: var(--wash);
+      border-radius: 12px;
+      padding: 16px;
+      max-height: 640px;
+      overflow: auto;
+      border: 1px solid var(--line-soft);
+    }
+
+    .empty, .loading {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 0;
+    }
+
+    .loading { animation: pulseSoft 1.4s ease infinite; }
+
+    .mobile-nav {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    @media (max-width: 1100px) {
+      .overview-grid,
+      .audit-layout,
+      .design-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .picker-bar {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .score-strip,
+      .metric-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(88vw, 320px);
+        z-index: 30;
+        transform: translateX(-105%);
+        transition: transform 0.25s ease;
+        box-shadow: 8px 0 30px rgba(21, 26, 31, 0.12);
+      }
+      .sidebar.open { transform: none; }
+      .mobile-nav { display: flex; align-items: center; justify-content: space-between; }
+      .workspace, .topbar { padding-left: 16px; padding-right: 16px; }
+      .comparison-grid { grid-template-columns: 1fr; }
+      .portfolio-tree { max-height: 40vh; }
+    }
+
+    .sidebar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar-head .sidebar-label { margin: 0; }
+
+    .icon-btn {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink-soft);
+      border-radius: 8px;
+      width: 28px;
+      height: 28px;
+      display: inline-grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent-deep); }
+    .icon-btn.danger:hover { border-color: #fecdca; color: var(--high); background: #fef3f2; }
+
+    .row-actions {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+      flex-shrink: 0;
+      opacity: 0.35;
+      transition: opacity 0.15s ease;
+    }
+
+    .portfolio-row:hover .row-actions,
+    .portfolio-row:focus-within .row-actions { opacity: 1; }
+
+    .portfolio-row {
+      align-items: center;
+    }
+
+    .portfolio-row .row-main {
+      min-width: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .portfolio-tree {
+      max-height: none;
+      flex: 1;
+      border: none;
+      background: transparent;
+      border-radius: 0;
+    }
+
+    .portfolio-company {
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      background: var(--paper);
+      margin-bottom: 8px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .portfolio-company:last-child { margin-bottom: 0; }
+
+    .portfolio-row.company {
+      padding: 11px 12px;
+      background: #f8fafb;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .portfolio-row.project {
+      padding: 8px 10px 8px 14px;
+      background: transparent;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .portfolio-row.website {
+      padding: 8px 10px 8px 26px;
+      border-top: 1px dashed var(--line-soft);
+      background: transparent;
+    }
+
+    .portfolio-row.crawl { display: none; }
+
+    .portfolio-summary {
+      font-size: 12px;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .add-trigger {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .onboard-panel {
+      display: none !important;
+    }
+
+    .site-title h2 {
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .site-title.empty-title h2 {
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--ink-soft);
+    }
+
+    .topbar-actions-secondary { display: none; }
+    .topbar.has-site .topbar-actions-secondary { display: flex; }
+
+    .picker-bar {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .workflow-wrap { display: none; }
+    .topbar.has-site .workflow-wrap {
+      display: flex;
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .empty-state {
+      display: none;
+      max-width: 420px;
+      margin: 48px auto;
+      text-align: center;
+      padding: 28px 20px;
+    }
+
+    .empty-state.visible { display: block; animation: fadeRise 0.4s ease both; }
+
+    .empty-state h3 {
+      margin: 0 0 8px;
+      font-family: var(--font-display);
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .empty-state p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .workspace.has-empty .mode-tabs,
+    .workspace.has-empty .mode-panel { display: none !important; }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(21, 26, 31, 0.38);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open { display: flex; animation: fadeRise 0.2s ease both; }
+
+    .modal {
+      width: min(440px, 100%);
+      background: var(--paper);
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 50px rgba(21, 26, 31, 0.18);
+      padding: 20px;
+    }
+
+    .modal h3 {
+      margin: 0 0 4px;
+      font-family: var(--font-display);
+      font-size: 18px;
+    }
+
+    .modal .card-subtitle { margin-bottom: 14px; }
+
+    .modal .onboard-grid { margin-top: 0; }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .metric-strip, .score-strip, .overview-grid {
+      opacity: 1;
+      transition: opacity 0.2s ease;
+    }
+
+  </style>
+</head>
+<body>
+<div class="mobile-nav">
+  <strong style="font-family:var(--font-display)">Website Intelligence</strong>
+  <button type="button" class="button small" id="sidebarToggle">Portfolio</button>
+</div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <div class="brand-icon">WI</div>
+        <div>
+          <h1>Website<br>Intelligence</h1>
+          <p>Agency workspace</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section" style="flex:1; min-height:0; display:flex; flex-direction:column;">
+      <div class="sidebar-head">
+        <p class="sidebar-label">Portfolio</p>
+        <button type="button" class="button small" id="openAddModal">+ New</button>
+      </div>
+      <div id="portfolioSummary" class="portfolio-summary">Loading…</div>
+      <div id="portfolioTree" class="portfolio-tree">
+        <div class="empty" style="padding:12px;">Loading…</div>
+      </div>
+    </div>
+
+    <!-- kept for JS compatibility; visually hidden -->
+    <section class="onboard-panel" id="onboardPanel" hidden></section>
+  </aside>
+
+  <div class="modal-backdrop" id="addModal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+    <div class="modal">
+      <h3 id="addModalTitle">Add client work</h3>
+      <p class="card-subtitle">Company → project → website URL</p>
+      <div class="onboard-grid">
+        <form id="addCompanyForm" class="onboard-form">
+          <label for="newCompanyName">Company</label>
+          <input id="newCompanyName" type="text" placeholder="Acme Corp" required />
+          <button type="submit" class="button">Add company</button>
+        </form>
+        <form id="addProjectForm" class="onboard-form">
+          <label for="newProjectName">Project</label>
+          <input id="newProjectName" type="text" placeholder="Website redesign" required />
+          <button type="submit" class="button">Add project</button>
+        </form>
+        <form id="addWebsiteForm" class="onboard-form">
+          <label for="newWebsiteUrl">Website URL</label>
+          <input id="newWebsiteUrl" type="url" placeholder="https://client-site.com" required />
+          <button type="submit" class="button primary">Add website</button>
+        </form>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="button" id="closeAddModal">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <header class="topbar" id="topbar">
+      <div class="topbar-row">
+        <div class="site-title">
+          <h2 id="websiteName">Website</h2>
+          <div class="website-url" id="websiteUrl">Loading…</div>
+          <div id="status" class="status">
+            <span class="status-dot"></span>
+            <span id="statusText">Loading</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="refreshBtn" class="button">Refresh</button>
+          <div class="actions topbar-actions-secondary">
+            <button id="brainBtn" class="button">Ask Brain</button>
+            <button id="mockupBtn" class="button">Generate Mockups</button>
+            <button id="proposalBtn" class="button">Generate Proposal</button>
+            <button id="pdfBtn" class="button" disabled>Export PDF</button>
+          </div>
+          <button id="crawlBtn" class="button primary">Run New Crawl</button>
+        </div>
+      </div>
+
+      <section class="picker-bar">
+        <div class="picker-field">
+          <label for="companySelect">Company</label>
+          <select id="companySelect"></select>
+        </div>
+        <div class="picker-field">
+          <label for="projectSelect">Project</label>
+          <select id="projectSelect"></select>
+        </div>
+        <div class="picker-field">
+          <label for="websiteSelect">Website</label>
+          <select id="websiteSelect"></select>
+        </div>
+        <div class="picker-field">
+          <label for="crawlSelect">Crawl</label>
+          <select id="crawlSelect"></select>
+        </div>
+        <div class="workflow-wrap">
+          <label class="field-label" style="letter-spacing:0.07em;text-transform:uppercase;font-size:10px;font-weight:700;">Workflow</label>
+          <div id="workflowStatus" class="status" style="margin-top:0;">
+            <span class="status-dot"></span>
+            <span id="workflowStatusText">—</span>
+          </div>
+          <div class="actions" id="workflowActions"></div>
+        </div>
+      </section>
+    </header>
+
+    <main class="workspace" id="workspace">
+      <div id="error" class="error"></div>
+
+      <div id="emptyState" class="empty-state">
+        <h3>Pick a website to begin</h3>
+        <p>Select a site from the portfolio, or add a company, project, and URL to run your first crawl.</p>
+        <button type="button" class="button primary" id="emptyAddBtn">Add client work</button>
+      </div>
+
+      <nav class="mode-tabs" role="tablist" aria-label="Workspace modes">
+        <button type="button" class="mode-tab active" data-mode="overview">Overview</button>
+        <button type="button" class="mode-tab" data-mode="design">Design</button>
+        <button type="button" class="mode-tab" data-mode="audit">Audit</button>
+        <button type="button" class="mode-tab" data-mode="brain">Brain</button>
+        <button type="button" class="mode-tab" data-mode="proposal">Proposal</button>
+      </nav>
+
+      <!-- OVERVIEW -->
+      <section class="mode-panel active" id="mode-overview">
+        <div class="metric-strip">
+          <div class="metric">
+            <div class="metric-label">Findings</div>
+            <div id="totalFindings" class="metric-value">—</div>
+            <div class="metric-note">Current crawl</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">High priority</div>
+            <div id="highFindings" class="metric-value">—</div>
+            <div class="metric-note">Needs attention</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Medium</div>
+            <div id="mediumFindings" class="metric-value">—</div>
+            <div class="metric-note">Recommended fixes</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Pages crawled</div>
+            <div id="pagesCrawled" class="metric-value">—</div>
+            <div class="metric-note">Analyzed pages</div>
+          </div>
+        </div>
+
+        <div class="score-strip" id="scoreCards">
+          <div class="score-item">
+            <div class="metric-label">Overall</div>
+            <div id="scoreOverall" class="metric-value">—</div>
+            <div class="card-subtitle">Heuristic /10</div>
+          </div>
+          <div class="score-item">
+            <div class="metric-label">SEO</div>
+            <div id="scoreSeo" class="metric-value">—</div>
+            <div class="card-subtitle">Category</div>
+          </div>
+          <div class="score-item">
+            <div class="metric-label">Performance</div>
+            <div id="scorePerf" class="metric-value">—</div>
+            <div class="card-subtitle">Category</div>
+          </div>
+          <div class="score-item">
+            <div class="metric-label">Accessibility</div>
+            <div id="scoreA11y" class="metric-value">—</div>
+            <div class="card-subtitle">Category</div>
+          </div>
+          <div class="score-item">
+            <div class="metric-label">Security</div>
+            <div id="scoreSecurity" class="metric-value">—</div>
+            <div class="card-subtitle">Category</div>
+          </div>
+        </div>
+
+        <div class="overview-grid">
+          <div class="surface">
+            <div class="section-head">
+              <h3>Crawl pulse</h3>
+              <span class="card-subtitle">Latest run</span>
+            </div>
+            <div class="detail-list">
+              <div><span>Status</span><strong id="crawlStatus">—</strong></div>
+              <div><span>Pages</span><strong id="crawlPages">—</strong></div>
+              <div><span>Started</span><strong id="crawlStarted">—</strong></div>
+              <div><span>Completed</span><strong id="crawlCompleted">—</strong></div>
+            </div>
+          </div>
+          <div class="surface">
+            <div class="section-head">
+              <h3>Vs previous crawl</h3>
+              <span class="card-subtitle">Trend</span>
+            </div>
+            <div class="comparison-grid">
+              <div class="comparison-card new">
+                <div class="comparison-label">New</div>
+                <div id="newFindings" class="number">—</div>
+              </div>
+              <div class="comparison-card resolved">
+                <div class="comparison-label">Resolved</div>
+                <div id="resolvedFindings" class="number">—</div>
+              </div>
+              <div class="comparison-card unchanged">
+                <div class="comparison-label">Unchanged</div>
+                <div id="unchangedFindings" class="number">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DESIGN (primary product) -->
+      <section class="mode-panel" id="mode-design">
+        <div class="design-layout">
+          <div class="surface" style="display:flex;flex-direction:column;">
+            <div class="section-head">
+              <h3>Design chat</h3>
+              <span id="designChatMeta" class="card-subtitle">Interactive redesign</span>
+            </div>
+            <div id="designBrief" class="finding-meta"></div>
+            <div id="designChatLog" class="design-chat-log">
+              <div class="empty">
+                Chat to change colors, headline, CTA — mockups regenerate when needed.
+                Try: “make accent navy and gold”
+              </div>
+            </div>
+            <form id="designChatForm" class="design-chat-form">
+              <input
+                id="designChatInput"
+                type="text"
+                placeholder="e.g. make accent navy, headline: Grow with solar"
+                autocomplete="off"
+              />
+              <button type="submit" id="designChatSend" class="button primary" disabled>Send</button>
+            </form>
+          </div>
+          <div class="surface">
+            <div class="section-head">
+              <h3>Mockups</h3>
+              <span id="mockupMeta" class="card-subtitle">Local concepts</span>
+            </div>
+            <div id="mockups" class="panel-body">
+              <div class="empty">Generate mockups or chat a design change to visualize direction.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AUDIT -->
+      <section class="mode-panel" id="mode-audit">
+        <div class="audit-layout">
+          <div class="surface">
+            <div class="section-head">
+              <h3>Findings</h3>
+              <span id="findingCountLabel" class="card-subtitle"></span>
+            </div>
+            <div id="findings" class="panel-body">
+              <div class="empty">No findings loaded yet.</div>
+            </div>
+          </div>
+          <div>
+            <div class="surface">
+              <div class="section-head">
+                <h3>Severity</h3>
+              </div>
+              <div id="severityBreakdown" class="breakdown"></div>
+            </div>
+            <div class="surface">
+              <div class="section-head">
+                <h3>Categories</h3>
+              </div>
+              <div id="categories" class="category-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="surface" style="margin-top:18px;">
+          <div class="section-head">
+            <h3>Annotated screenshots</h3>
+            <span id="annotatedMeta" class="card-subtitle">Findings overlay</span>
+          </div>
+          <div id="annotatedShots" class="panel-body">
+            <div class="empty">Annotated screenshots appear after a crawl completes.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BRAIN -->
+      <section class="mode-panel" id="mode-brain">
+        <div class="surface">
+          <div class="section-head">
+            <h3>Brain recommendations</h3>
+            <span id="brainMeta" class="card-subtitle">Local Ollama</span>
+          </div>
+          <div id="recommendations" class="panel-body">
+            <div class="empty">Run a crawl, then click Ask Brain for local AI suggestions.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROPOSAL -->
+      <section class="mode-panel" id="mode-proposal">
+        <div class="surface">
+          <div class="section-head">
+            <h3>Business proposal</h3>
+            <span id="proposalMeta" class="card-subtitle">Draft</span>
+          </div>
+          <div id="proposal" class="panel-body">
+            <div class="empty">Generate a proposal after recommendations (mockups optional but recommended).</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+  const API = "http://127.0.0.1:8000";
+  const STORAGE_KEYS = {
+    companyId: "wi_company_id",
+    projectId: "wi_project_id",
+    websiteId: "wi_website_id",
+    crawlId: "wi_crawl_id",
+  };
+
+  let companyId = localStorage.getItem(STORAGE_KEYS.companyId) || "";
+  let websiteId = localStorage.getItem(STORAGE_KEYS.websiteId) || "";
+  let projectId = localStorage.getItem(STORAGE_KEYS.projectId) || "";
+  let currentCrawlId = localStorage.getItem(STORAGE_KEYS.crawlId) || null;
+  let previousCrawlId = null;
+  let pollTimer = null;
+  let allWebsites = [];
+  let allProjects = [];
+  let allCompanies = [];
+  let portfolioData = null;
+
+  const $ = (id) => document.getElementById(id);
+
+  function showError(message) {
+    const el = $("error");
+    el.textContent = message;
+    el.style.display = "block";
+  }
+
+  function clearError() {
+    $("error").style.display = "none";
+  }
+
+  function formatDate(value) {
+    if (!value) return "—";
+
+    return new Date(value).toLocaleString();
+  }
+
+  function setStatus(status) {
+    const el = $("status");
+
+    el.className = "status " + (status || "");
+
+    $("statusText").textContent =
+      status ? status.toUpperCase() : "UNKNOWN";
+  }
+
+  async function api(path, options = {}) {
+    const response = await fetch(API + path, options);
+
+    if (!response.ok) {
+      let detail = `${response.status} ${response.statusText}`;
+      try {
+        const body = await response.json();
+        if (body.detail) {
+          detail = typeof body.detail === "string"
+            ? body.detail
+            : JSON.stringify(body.detail);
+        }
+      } catch (e) {
+        /* ignore */
+      }
+      throw new Error(detail);
+    }
+
+    if (response.status === 204) return null;
+    const text = await response.text();
+    if (!text) return null;
+    return JSON.parse(text);
+  }
+
+  function normalizeWebsiteUrl(raw) {
+    let url = (raw || "").trim();
+    if (!url) return "";
+    if (!/^https?:\/\//i.test(url)) {
+      url = "https://" + url;
+    }
+    return url;
+  }
+
+  async function addCompany(event) {
+    event.preventDefault();
+    clearError();
+    const name = $("newCompanyName").value.trim();
+    if (!name) return;
+
+    const button = event.target.querySelector("button[type=submit]");
+    button.disabled = true;
+    try {
+      const company = await api("/api/companies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      companyId = company.id;
+      localStorage.setItem(STORAGE_KEYS.companyId, companyId);
+      $("newCompanyName").value = "";
+      await bootstrapPickers();
+      closeAddModal();
+    } catch (error) {
+      showError("Could not add company: " + error.message);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function addProject(event) {
+    event.preventDefault();
+    clearError();
+    const name = $("newProjectName").value.trim();
+    if (!name) return;
+
+    if (!companyId) {
+      showError("Pick or create a company first.");
+      return;
+    }
+
+    const button = event.target.querySelector("button[type=submit]");
+    button.disabled = true;
+    try {
+      const project = await api("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, company_id: companyId }),
+      });
+      projectId = project.id;
+      localStorage.setItem(STORAGE_KEYS.projectId, projectId);
+      $("newProjectName").value = "";
+      await bootstrapPickers();
+      closeAddModal();
+    } catch (error) {
+      showError("Could not add project: " + error.message);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function addWebsite(event) {
+    event.preventDefault();
+    clearError();
+
+    if (!projectId) {
+      showError("Pick or create a project first.");
+      return;
+    }
+
+    const url = normalizeWebsiteUrl($("newWebsiteUrl").value);
+    if (!url) {
+      showError("Enter a valid website URL.");
+      return;
+    }
+
+    const button = event.target.querySelector("button[type=submit]");
+    button.disabled = true;
+    try {
+      const website = await api(`/api/projects/${projectId}/websites`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      websiteId = website.id;
+      localStorage.setItem(STORAGE_KEYS.websiteId, websiteId);
+      $("newWebsiteUrl").value = "";
+      allWebsites = await api("/api/websites").catch(() => []);
+      await onProjectChanged(false);
+      closeAddModal();
+    } catch (error) {
+      showError("Could not add website: " + error.message);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  function fillSelect(selectEl, items, getValue, getLabel, selected) {
+    selectEl.innerHTML = items.map((item) => {
+      const value = getValue(item);
+      const label = getLabel(item);
+      const isSelected = String(value) === String(selected);
+      return `<option value="${escapeHtml(value)}" ${isSelected ? "selected" : ""}>${escapeHtml(label)}</option>`;
+    }).join("");
+  }
+
+  function resetScoreCards() {
+    ["scoreOverall", "scoreSeo", "scorePerf", "scoreA11y", "scoreSecurity"]
+      .forEach((id) => { $(id).textContent = "—"; });
+    const overallSub = $("scoreOverall")?.parentElement?.querySelector(".card-subtitle");
+    if (overallSub) overallSub.textContent = "Heuristic /10";
+  }
+
+  function renderScores(scores) {
+    if (!scores) {
+      resetScoreCards();
+      return;
+    }
+    const byCat = scores.by_category || {};
+    $("scoreOverall").textContent =
+      scores.overall != null ? scores.overall : "—";
+    $("scoreSeo").textContent =
+      byCat.seo != null ? byCat.seo : "—";
+    $("scorePerf").textContent =
+      byCat.performance != null ? byCat.performance : "—";
+    $("scoreA11y").textContent =
+      byCat.accessibility != null ? byCat.accessibility : "—";
+    $("scoreSecurity").textContent =
+      byCat.security != null ? byCat.security : "—";
+
+    const overallSub = $("scoreOverall")?.parentElement?.querySelector(".card-subtitle");
+    if (overallSub) {
+      const method = scores.method || "heuristic_v1";
+      overallSub.textContent = String(method).includes("lighthouse")
+        ? "Lighthouse /10"
+        : "Heuristic /10";
+    }
+  }
+
+  async function loadScores(crawlId) {
+    try {
+      const pack = await api(
+        `/api/websites/${websiteId}/crawls/${crawlId}/evidence-pack`
+      );
+      renderScores(pack.scores || null);
+      renderAnnotated(pack);
+      return pack;
+    } catch (error) {
+      resetScoreCards();
+      $("annotatedShots").innerHTML =
+        '<div class="empty">No annotated screenshots yet.</div>';
+      $("annotatedMeta").textContent = "Findings overlay";
+      return null;
+    }
+  }
+
+  function renderAnnotated(pack) {
+    const domain = pack?.website?.domain
+      || allWebsites.find((w) => w.id === websiteId)?.domain
+      || "";
+    const images = pack?.annotated_screenshots || [];
+    $("annotatedMeta").textContent = images.length
+      ? `${images.length} annotated`
+      : "Findings overlay";
+
+    if (!images.length || !domain) {
+      $("annotatedShots").innerHTML =
+        '<div class="empty">Annotated screenshots appear after a crawl completes.</div>';
+      return;
+    }
+
+    $("annotatedShots").innerHTML = `
+      <div class="annotated-grid">
+        ${images.map((img) => `
+          <div class="annotated-card">
+            <a href="/data/websites/${escapeHtml(domain)}/crawls/${escapeHtml(currentCrawlId)}/${escapeHtml(img.annotated_path)}" target="_blank" rel="noopener">
+              <img
+                src="/data/websites/${escapeHtml(domain)}/crawls/${escapeHtml(currentCrawlId)}/${escapeHtml(img.annotated_path)}?t=${Date.now()}"
+                alt="Annotated findings"
+              />
+            </a>
+            <div class="caption">
+              ${escapeHtml(img.url || "")}
+              · ${escapeHtml(img.finding_count ?? 0)} findings
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  const WORKFLOW_LABELS = {
+    created: "Created",
+    crawling: "Crawling",
+    evidence_collected: "Evidence collected",
+    analyzing: "Analyzing",
+    awaiting_approval: "Awaiting approval",
+    approved: "Approved",
+    implementation: "Implementation",
+    verification: "Verification",
+    completed: "Completed",
+  };
+
+  async function loadWorkflow() {
+    if (!projectId) {
+      $("workflowStatusText").textContent = "—";
+      $("workflowActions").innerHTML = "";
+      return;
+    }
+    try {
+      const data = await api(`/api/projects/${projectId}/workflow`);
+      const status = data.status || "created";
+      $("workflowStatus").className = "status " + status;
+      $("workflowStatusText").textContent =
+        (WORKFLOW_LABELS[status] || status).toUpperCase();
+
+      const next = data.allowed_next || [];
+      $("workflowActions").innerHTML = next.map((s) => `
+        <button class="button small" data-status="${escapeHtml(s)}">
+          → ${escapeHtml(WORKFLOW_LABELS[s] || s)}
+        </button>
+      `).join("");
+
+      $("workflowActions").querySelectorAll("button[data-status]").forEach((btn) => {
+        btn.addEventListener("click", () => advanceWorkflow(btn.dataset.status));
+      });
+    } catch (error) {
+      $("workflowStatusText").textContent = "—";
+      $("workflowActions").innerHTML = "";
+    }
+  }
+
+  async function advanceWorkflow(status) {
+    if (!projectId || !status) return;
+    clearError();
+    try {
+      await api(`/api/projects/${projectId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      await loadWorkflow();
+    } catch (error) {
+      showError("Could not update workflow: " + error.message);
+    }
+  }
+
+  function projectsForCompany(cid) {
+    if (!cid) return allProjects;
+    return allProjects.filter((p) => String(p.company_id) === String(cid));
+  }
+
+  function resolveCompanyFromSelection() {
+    if (companyId && allCompanies.some((c) => String(c.id) === String(companyId))) {
+      return companyId;
+    }
+    const fromProject = allProjects.find((p) => String(p.id) === String(projectId));
+    if (fromProject?.company_id) {
+      return fromProject.company_id;
+    }
+    return allCompanies[0]?.id || "";
+  }
+
+  function crawlBadgeClass(status) {
+    if (status === "completed") return "completed";
+    if (status === "failed") return "failed";
+    if (status === "running" || status === "queued") return "running";
+    return "";
+  }
+
+  function treeActions(kind, id, name) {
+    return `
+      <span class="row-actions">
+        <button type="button" class="icon-btn portfolio-edit" title="Rename"
+          data-kind="${escapeHtml(kind)}" data-id="${escapeHtml(id)}" data-name="${escapeHtml(name)}">✎</button>
+        <button type="button" class="icon-btn danger portfolio-delete" title="Delete"
+          data-kind="${escapeHtml(kind)}" data-id="${escapeHtml(id)}" data-name="${escapeHtml(name)}">×</button>
+      </span>`;
+  }
+
+  function renderPortfolio(data) {
+    portfolioData = data;
+    const summary = data?.summary || {};
+    $("portfolioSummary").innerHTML = [
+      `<span><strong>${summary.companies || 0}</strong> companies</span>`,
+      `<span><strong>${summary.projects || 0}</strong> projects</span>`,
+      `<span><strong>${summary.websites || 0}</strong> sites</span>`,
+    ].join("");
+
+    const parts = [];
+
+    function renderWebsites(project, companyIdValue) {
+      const websites = project.websites || [];
+      if (!websites.length) {
+        return `<div class="portfolio-row website"><span class="meta">No websites yet</span></div>`;
+      }
+      return websites.map((website) => {
+        const latest = (website.crawls && website.crawls[0]) || null;
+        const status = latest?.status || website.latest_crawl_status || "";
+        return `
+          <div class="portfolio-row website">
+            <div class="row-main">
+              <button type="button" class="link portfolio-open"
+                data-company-id="${escapeHtml(companyIdValue || "")}"
+                data-project-id="${escapeHtml(project.id)}"
+                data-website-id="${escapeHtml(website.id)}"
+                data-crawl-id="${escapeHtml(latest?.id || "")}">
+                ${escapeHtml(website.domain || website.url)}
+              </button>
+              <span class="meta">${website.crawl_count || 0} crawl(s)${status ? " · " + escapeHtml(status) : ""}</span>
+            </div>
+            ${status ? `<span class="portfolio-badge ${crawlBadgeClass(status)}">${escapeHtml(status)}</span>` : ""}
+          </div>`;
+      }).join("");
+    }
+
+    function renderProjects(projects, companyIdValue) {
+      if (!projects.length) {
+        return `<div class="portfolio-row project"><span class="meta">No projects yet</span></div>`;
+      }
+      return projects.map((project) => `
+        <div class="portfolio-project">
+          <div class="portfolio-row project">
+            <div class="row-main">
+              <button type="button" class="link portfolio-open"
+                data-company-id="${escapeHtml(companyIdValue || "")}"
+                data-project-id="${escapeHtml(project.id)}"
+                data-website-id=""
+                data-crawl-id="">
+                ${escapeHtml(project.name)}
+              </button>
+              <span class="meta">${project.website_count || 0} site(s)</span>
+            </div>
+            ${treeActions("project", project.id, project.name)}
+          </div>
+          ${renderWebsites(project, companyIdValue)}
+        </div>`).join("");
+    }
+
+    (data?.companies || []).forEach((company) => {
+      parts.push(`
+        <div class="portfolio-company">
+          <div class="portfolio-row company">
+            <div class="row-main">
+              <button type="button" class="link portfolio-open"
+                data-company-id="${escapeHtml(company.id)}"
+                data-project-id=""
+                data-website-id=""
+                data-crawl-id="">
+                <strong>${escapeHtml(company.name)}</strong>
+              </button>
+              <span class="meta">${company.project_count || 0} project(s)</span>
+            </div>
+            ${treeActions("company", company.id, company.name)}
+          </div>
+          ${renderProjects(company.projects || [], company.id)}
+        </div>`);
+    });
+
+    if ((data?.unassigned_projects || []).length) {
+      parts.push(`
+        <div class="portfolio-company">
+          <div class="portfolio-row company">
+            <div class="row-main"><strong>Unassigned</strong>
+              <span class="meta">${data.unassigned_projects.length} project(s)</span>
+            </div>
+          </div>
+          ${renderProjects(data.unassigned_projects, "")}
+        </div>`);
+    }
+
+    if (!parts.length) {
+      $("portfolioTree").innerHTML =
+        '<div class="empty" style="padding:8px 2px;">Nothing here yet. Use + New to add a company.</div>';
+      return;
+    }
+
+    $("portfolioTree").innerHTML = parts.join("");
+  }
+
+  async function loadPortfolio() {
+    try {
+      const data = await api("/api/companies/portfolio/all");
+      renderPortfolio(data);
+    } catch (error) {
+      $("portfolioSummary").textContent = "Could not load history";
+      $("portfolioTree").innerHTML =
+        `<div class="empty" style="padding:16px;">${escapeHtml(error.message)}</div>`;
+    }
+  }
+
+  async function navigateToSelection(nextCompanyId, nextProjectId, nextWebsiteId, nextCrawlId) {
+    if (nextCompanyId) {
+      companyId = nextCompanyId;
+      localStorage.setItem(STORAGE_KEYS.companyId, companyId);
+    }
+    if (nextProjectId) {
+      projectId = nextProjectId;
+      localStorage.setItem(STORAGE_KEYS.projectId, projectId);
+    }
+    if (nextWebsiteId) {
+      websiteId = nextWebsiteId;
+      localStorage.setItem(STORAGE_KEYS.websiteId, websiteId);
+    }
+    if (nextCrawlId) {
+      currentCrawlId = nextCrawlId;
+      localStorage.setItem(STORAGE_KEYS.crawlId, currentCrawlId);
+    }
+
+    fillSelect(
+      $("companySelect"),
+      allCompanies,
+      (c) => c.id,
+      (c) => c.name,
+      companyId
+    );
+
+    const projects = projectsForCompany(companyId);
+    fillSelect(
+      $("projectSelect"),
+      projects,
+      (p) => p.id,
+      (p) => p.name,
+      projectId
+    );
+
+    await onProjectChanged(false);
+
+    if (nextCrawlId && websiteId) {
+      const crawls = await api(`/api/websites/${websiteId}/crawls`).catch(() => []);
+      const sorted = [...(crawls || [])].sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      );
+      fillSelect(
+        $("crawlSelect"),
+        sorted,
+        (c) => c.id,
+        (c) => {
+          const when = c.completed_at || c.created_at;
+          return `${c.status} · ${formatDate(when)} · ${c.pages_crawled || 0} pages`;
+        },
+        nextCrawlId
+      );
+      currentCrawlId = nextCrawlId;
+      localStorage.setItem(STORAGE_KEYS.crawlId, currentCrawlId);
+      await onCrawlChanged();
+    }
+  }
+
+  async function bootstrapPickers() {
+    const [companies, projects, websites, portfolio] = await Promise.all([
+      api("/api/companies").catch(() => []),
+      api("/api/projects").catch(() => []),
+      api("/api/websites").catch(() => []),
+      api("/api/companies/portfolio/all").catch(() => null),
+    ]);
+
+    allCompanies = Array.isArray(companies) ? companies : [];
+    allProjects = Array.isArray(projects) ? projects : [];
+    allWebsites = Array.isArray(websites) ? websites : [];
+
+    if (portfolio) {
+      renderPortfolio(portfolio);
+    } else {
+      await loadPortfolio();
+    }
+
+    if ($("onboardPanel")) $("onboardPanel").style.display = "block";
+
+    if (!allCompanies.length && !allProjects.length && !allWebsites.length) {
+      $("websiteName").textContent = "Get started";
+      $("websiteUrl").textContent = "Add a company, project, and website to begin";
+      $("companySelect").innerHTML = "";
+      $("projectSelect").innerHTML = "";
+      $("websiteSelect").innerHTML = "";
+      $("crawlSelect").innerHTML = "";
+      setWorkspaceEmpty(true);
+      return;
+    }
+
+    if (!projectId) {
+      const fromWebsite = allWebsites.find((w) => w.id === websiteId);
+      projectId = fromWebsite?.project_id || allProjects[0]?.id || "";
+    }
+
+    companyId = resolveCompanyFromSelection();
+    localStorage.setItem(STORAGE_KEYS.companyId, companyId);
+
+    fillSelect(
+      $("companySelect"),
+      allCompanies,
+      (c) => c.id,
+      (c) => c.name,
+      companyId
+    );
+
+    const visibleProjects = projectsForCompany(companyId);
+    if (!visibleProjects.some((p) => String(p.id) === String(projectId))) {
+      projectId = visibleProjects[0]?.id || "";
+    }
+
+    fillSelect(
+      $("projectSelect"),
+      visibleProjects,
+      (p) => p.id,
+      (p) => p.name,
+      projectId
+    );
+
+    await onProjectChanged(false);
+  }
+
+  async function onCompanyChanged(resetProject = true) {
+    companyId = $("companySelect").value;
+    localStorage.setItem(STORAGE_KEYS.companyId, companyId);
+
+    const visibleProjects = projectsForCompany(companyId);
+
+    if (resetProject || !visibleProjects.some((p) => String(p.id) === String(projectId))) {
+      projectId = visibleProjects[0]?.id || "";
+    }
+
+    fillSelect(
+      $("projectSelect"),
+      visibleProjects,
+      (p) => p.id,
+      (p) => p.name,
+      projectId
+    );
+
+    await onProjectChanged(false);
+  }
+
+  async function onProjectChanged(resetWebsite = true) {
+    projectId = $("projectSelect").value;
+    localStorage.setItem(STORAGE_KEYS.projectId, projectId);
+
+    await loadWorkflow();
+
+    const websites = allWebsites.filter((w) => w.project_id === projectId);
+
+    if (resetWebsite || !websites.some((w) => w.id === websiteId)) {
+      websiteId = websites[0]?.id || "";
+    }
+
+    fillSelect(
+      $("websiteSelect"),
+      websites,
+      (w) => w.id,
+      (w) => `${w.domain} (${w.url})`,
+      websiteId
+    );
+
+    if (!websiteId) {
+      $("websiteName").textContent = "No website selected";
+      $("websiteUrl").textContent = "Choose a site in the portfolio or add one";
+      $("crawlSelect").innerHTML = "";
+      setWorkspaceEmpty(true);
+      return;
+    }
+
+    await onWebsiteChanged(false);
+  }
+
+  async function onWebsiteChanged(resetCrawl = true) {
+    websiteId = $("websiteSelect").value;
+    localStorage.setItem(STORAGE_KEYS.websiteId, websiteId);
+
+    const website = allWebsites.find((w) => w.id === websiteId);
+    if (website) {
+      $("websiteName").textContent = website.domain || "Website";
+      $("websiteUrl").textContent = website.url || "";
+    }
+    setWorkspaceEmpty(false);
+
+    const crawls = await api(`/api/websites/${websiteId}/crawls`).catch(() => []);
+    if (!Array.isArray(crawls) || !crawls.length) {
+      $("crawlSelect").innerHTML = "";
+      currentCrawlId = null;
+      previousCrawlId = null;
+      localStorage.removeItem(STORAGE_KEYS.crawlId);
+      $("findings").innerHTML =
+        '<div class="empty">No crawls yet. Run your first crawl.</div>';
+      resetScoreCards();
+      return;
+    }
+
+    const sorted = [...crawls].sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+
+    if (resetCrawl || !sorted.some((c) => c.id === currentCrawlId)) {
+      currentCrawlId = sorted[0].id;
+    }
+
+    fillSelect(
+      $("crawlSelect"),
+      sorted,
+      (c) => c.id,
+      (c) => {
+        const when = c.completed_at || c.created_at;
+        return `${c.status} · ${formatDate(when)} · ${c.pages_crawled || 0} pages`;
+      },
+      currentCrawlId
+    );
+
+    localStorage.setItem(STORAGE_KEYS.crawlId, currentCrawlId);
+    const idx = sorted.findIndex((c) => c.id === currentCrawlId);
+    previousCrawlId = idx >= 0 && sorted[idx + 1] ? sorted[idx + 1].id : null;
+
+    await loadCrawl(currentCrawlId);
+
+    if (previousCrawlId) {
+      await loadComparison(currentCrawlId, previousCrawlId);
+    } else {
+      $("newFindings").textContent = "—";
+      $("resolvedFindings").textContent = "—";
+      $("unchangedFindings").textContent = "—";
+    }
+  }
+
+  async function onCrawlChanged() {
+    currentCrawlId = $("crawlSelect").value;
+    localStorage.setItem(STORAGE_KEYS.crawlId, currentCrawlId);
+
+    const crawls = await api(`/api/websites/${websiteId}/crawls`).catch(() => []);
+    const sorted = [...(crawls || [])].sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+    const idx = sorted.findIndex((c) => c.id === currentCrawlId);
+    previousCrawlId = idx >= 0 && sorted[idx + 1] ? sorted[idx + 1].id : null;
+
+    await loadCrawl(currentCrawlId);
+    if (previousCrawlId) {
+      await loadComparison(currentCrawlId, previousCrawlId);
+    }
+  }
+
+  async function loadLatestCrawl() {
+    await bootstrapPickers();
+  }
+
+  async function loadCrawl(crawlId) {
+    const crawl = await api(
+      `/api/websites/${websiteId}/crawls/${crawlId}`
+    );
+
+    setStatus(crawl.status);
+
+    $("crawlStatus").textContent = crawl.status;
+    $("crawlPages").textContent =
+      `${crawl.pages_crawled || 0} / ${crawl.pages_discovered || 0}`;
+
+    $("pagesCrawled").textContent =
+      crawl.pages_crawled || 0;
+
+    $("crawlStarted").textContent =
+      formatDate(crawl.started_at);
+
+    $("crawlCompleted").textContent =
+      formatDate(crawl.completed_at);
+
+    if (crawl.status === "completed") {
+      await loadSummary(crawlId);
+      await loadFindings(crawlId);
+      await loadScores(crawlId);
+      await loadRecommendations(crawlId);
+      await loadMockups(crawlId);
+      await loadProposal(crawlId);
+      await loadDesignChat(crawlId);
+      $("brainBtn").disabled = false;
+      $("mockupBtn").disabled = false;
+      $("proposalBtn").disabled = false;
+      $("pdfBtn").disabled = false;
+      $("designChatSend").disabled = false;
+      $("designChatInput").disabled = false;
+    } else {
+      resetScoreCards();
+      $("annotatedShots").innerHTML =
+        '<div class="empty">Annotated screenshots appear after a crawl completes.</div>';
+      $("designChatLog").innerHTML =
+        '<div class="empty">Finish a crawl to use design chat.</div>';
+      $("designBrief").textContent = "";
+      $("brainBtn").disabled = true;
+      $("mockupBtn").disabled = true;
+      $("proposalBtn").disabled = true;
+      $("pdfBtn").disabled = true;
+      $("designChatSend").disabled = true;
+      $("designChatInput").disabled = true;
+    }
+
+    await loadWorkflow();
+
+    if (
+      crawl.status === "queued" ||
+      crawl.status === "running"
+    ) {
+      startPolling(crawlId);
+    }
+  }
+
+  async function loadSummary(crawlId) {
+    const summary = await api(
+      `/api/websites/${websiteId}/crawls/${crawlId}/findings/summary`
+    );
+
+    $("totalFindings").textContent =
+      summary.total ?? 0;
+
+    $("highFindings").textContent =
+      summary.by_severity?.high ?? 0;
+
+    $("mediumFindings").textContent =
+      summary.by_severity?.medium ?? 0;
+
+    renderSeverity(summary.by_severity || {});
+    renderCategories(summary.by_category || {});
+  }
+
+  async function loadFindings(crawlId) {
+    const findings = await api(
+      `/api/websites/${websiteId}/crawls/${crawlId}/findings`
+    );
+
+    $("findingCountLabel").textContent =
+      `${findings.length} findings`;
+
+    if (!findings.length) {
+      $("findings").innerHTML =
+        '<div class="empty">No issues found. Nice work!</div>';
+      return;
+    }
+
+    $("findings").innerHTML = findings.map(f => `
+      <div class="finding">
+        <div class="finding-top">
+          <span class="severity ${escapeHtml(f.severity)}">
+            ${escapeHtml(f.severity)}
+          </span>
+
+          <span class="finding-title">
+            ${escapeHtml(f.title)}
+          </span>
+        </div>
+
+        <div class="finding-description">
+          ${escapeHtml(f.description)}
+        </div>
+
+        <div class="finding-meta">
+          ${escapeHtml(f.category)}
+          ${f.url ? " • " + escapeHtml(f.url) : ""}
+        </div>
+      </div>
+    `).join("");
+  }
+
+  async function loadRecommendations(crawlId) {
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${crawlId}/recommendations`
+      );
+      renderRecommendations(data);
+    } catch (error) {
+      $("recommendations").innerHTML =
+        '<div class="empty">No recommendations yet. Click Ask Brain.</div>';
+      $("brainMeta").textContent = "Local Ollama";
+    }
+  }
+
+  function renderRecommendations(data) {
+    const rec = data.recommendations || {};
+    const scores = data.scores || {};
+    const byCat = scores.by_category || {};
+    const story = rec.site_story_summary || {};
+
+    $("brainMeta").textContent = [
+      data.source || "unknown",
+      data.model || null,
+      scores.overall != null ? `score ${scores.overall}/10` : null,
+    ].filter(Boolean).join(" · ");
+
+    const scorePills = [
+      scores.overall != null
+        ? `<span class="score-pill">Overall ${escapeHtml(scores.overall)}/10</span>`
+        : "",
+      ...Object.entries(byCat).map(
+        ([k, v]) =>
+          `<span class="score-pill">${escapeHtml(k)} ${escapeHtml(v)}/10</span>`
+      ),
+    ].join("");
+
+    const storyBlock = (story.story || story.business_type)
+      ? `
+        <div class="rec-action" style="margin-bottom:18px;">
+          <div class="rec-action-title">Site story</div>
+          <div class="rec-chips">
+            ${story.business_type ? `<span class="chip">${escapeHtml(story.business_type)}</span>` : ""}
+            ${story.tone ? `<span class="chip">${escapeHtml(story.tone)}</span>` : ""}
+            ${story.audience ? `<span class="chip">${escapeHtml(story.audience)}</span>` : ""}
+          </div>
+          <div class="finding-description">${escapeHtml(story.story || "")}</div>
+          ${story.offer ? `<div class="finding-meta">Offer: ${escapeHtml(story.offer)}</div>` : ""}
+          ${(story.gaps || []).length
+            ? `<ul class="rec-list">${story.gaps.map((g) => `<li>${escapeHtml(g)}</li>`).join("")}</ul>`
+            : ""}
+        </div>`
+      : "";
+
+    const actions = (rec.priority_actions || []).map((a) => `
+      <div class="rec-action">
+        <div class="rec-action-title">${escapeHtml(a.title)}</div>
+        <div class="rec-chips">
+          <span class="chip ${escapeHtml(a.impact)}">${escapeHtml(a.impact)} impact</span>
+          <span class="chip">${escapeHtml(a.effort)} effort</span>
+          <span class="chip">${escapeHtml(a.category)}</span>
+        </div>
+        <div class="finding-description">${escapeHtml(a.why)}</div>
+        <div class="finding-meta">${escapeHtml(a.how)}</div>
+      </div>
+    `).join("") || '<div class="empty">No priority actions.</div>';
+
+    const list = (items) =>
+      items && items.length
+        ? `<ul class="rec-list">${items.map((i) => `<li>${escapeHtml(i)}</li>`).join("")}</ul>`
+        : '<div class="empty">None</div>';
+
+    $("recommendations").innerHTML = `
+      <div class="score-row">${scorePills}</div>
+      ${storyBlock}
+      <div class="rec-summary">${escapeHtml(rec.executive_summary || "")}</div>
+      <h3 style="margin:0 0 8px;font-size:14px;">Priority actions</h3>
+      ${actions}
+      <h3 style="margin:22px 0 8px;font-size:14px;">Quick wins</h3>
+      ${list(rec.quick_wins)}
+      <h3 style="margin:22px 0 8px;font-size:14px;">Strategic improvements</h3>
+      ${list(rec.strategic_improvements)}
+      <h3 style="margin:22px 0 8px;font-size:14px;">Proposal angles</h3>
+      ${list(rec.proposal_angles)}
+    `;
+  }
+
+  async function loadProposal(crawlId) {
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${crawlId}/proposal`
+      );
+      renderProposal(data);
+    } catch (error) {
+      $("proposal").innerHTML =
+        '<div class="empty">No proposal yet. Click Generate Proposal.</div>';
+      $("proposalMeta").textContent = "Draft";
+    }
+  }
+
+  function renderProposal(data) {
+    const pkg = data.recommended_package || "n/a";
+    $("proposalMeta").textContent = [
+      data.source || "draft",
+      data.model || null,
+      `package: ${pkg}`,
+    ].filter(Boolean).join(" · ");
+
+    const domain = data.domain
+      || allWebsites.find((w) => w.id === websiteId)?.domain
+      || "";
+
+    const download = data.markdown_file && domain
+      ? `<a class="button" style="display:inline-block;margin:0 8px 12px 0;text-decoration:none;" href="/data/websites/${escapeHtml(domain)}/crawls/${escapeHtml(currentCrawlId)}/${escapeHtml(data.markdown_file)}" target="_blank" rel="noopener">Open Markdown</a>`
+      : "";
+
+    const pdf = data.pdf_file && domain
+      ? `<a class="button" style="display:inline-block;margin:0 8px 12px 0;text-decoration:none;" href="/data/websites/${escapeHtml(domain)}/crawls/${escapeHtml(currentCrawlId)}/${escapeHtml(data.pdf_file)}" target="_blank" rel="noopener">Open PDF</a>`
+      : "";
+
+    $("proposal").innerHTML = `
+      <div class="proposal-meta">
+        ${escapeHtml(data.company_name || "Website Intelligence")}
+        ${data.scores?.overall != null ? ` · score ${escapeHtml(data.scores.overall)}/10` : ""}
+        ${data.error ? ` · fallback: ${escapeHtml(data.error)}` : ""}
+      </div>
+      ${download}${pdf}
+      <pre class="proposal-markdown">${escapeHtml(data.markdown || "")}</pre>
+    `;
+  }
+
+  async function exportProposalPdf() {
+    if (!currentCrawlId) {
+      showError("No crawl selected yet.");
+      return;
+    }
+
+    clearError();
+    const button = $("pdfBtn");
+    button.disabled = true;
+    button.textContent = "Exporting...";
+
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${currentCrawlId}/proposal/pdf`,
+        { method: "POST" }
+      );
+      await loadProposal(currentCrawlId);
+      if (data.url) {
+        window.open(data.url, "_blank", "noopener");
+      }
+    } catch (error) {
+      console.error(error);
+      showError("Could not export PDF: " + error.message);
+    } finally {
+      button.disabled = false;
+      button.textContent = "Export PDF";
+    }
+  }
+
+  async function generateProposalDoc() {
+    if (!currentCrawlId) {
+      showError("No crawl selected yet.");
+      return;
+    }
+
+    clearError();
+    const button = $("proposalBtn");
+    button.disabled = true;
+    button.textContent = "Writing...";
+    $("proposal").innerHTML =
+      '<div class="loading">Drafting business proposal...</div>';
+
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${currentCrawlId}/proposal`,
+        { method: "POST" }
+      );
+      renderProposal(data);
+      if (data.source === "rule_based_fallback" && data.error) {
+        showError(
+          "Ollama unavailable for narrative — used template fallback. " +
+          data.error
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      showError("Could not generate proposal: " + error.message);
+      $("proposal").innerHTML =
+        '<div class="empty">Proposal generation failed.</div>';
+    } finally {
+      button.disabled = false;
+      button.textContent = "Generate Proposal";
+    }
+  }
+
+  async function loadDesignChat(crawlId) {
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${crawlId}/design/chat`
+      );
+      renderDesignChat(data);
+    } catch (error) {
+      $("designChatLog").innerHTML =
+        '<div class="empty">Design chat unavailable yet.</div>';
+      $("designBrief").textContent = "";
+      $("designChatMeta").textContent = "Interactive redesign";
+    }
+  }
+
+  function renderDesignBrief(brief) {
+    if (!brief) {
+      $("designBrief").textContent = "";
+      return;
+    }
+    const palette = brief.palette || {};
+    const swatches = ["accent", "accent_2", "bg"]
+      .filter((k) => palette[k])
+      .map(
+        (k) =>
+          `<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${escapeHtml(palette[k])};vertical-align:middle;margin-right:4px;"></span>${escapeHtml(k)} ${escapeHtml(palette[k])}`
+      )
+      .join(" · ");
+    $("designBrief").innerHTML = [
+      brief.headline ? `<strong>${escapeHtml(brief.headline)}</strong>` : "",
+      brief.cta ? `CTA: ${escapeHtml(brief.cta)}` : "",
+      swatches,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+  }
+
+  function renderDesignChat(data) {
+    const messages = data.messages || [];
+    renderDesignBrief(data.design_brief);
+    $("designChatMeta").textContent = [
+      `${messages.length} messages`,
+      data.design_brief?.updated_at
+        ? `brief ${formatDate(data.design_brief.updated_at)}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
+    if (!messages.length) {
+      $("designChatLog").innerHTML = `
+        <div class="empty">
+          Chat to change colors, headline, CTA — mockups regenerate when needed.
+          Try: “make accent navy and gold”
+        </div>`;
+      return;
+    }
+
+    $("designChatLog").innerHTML = messages
+      .map(
+        (m) => `
+      <div class="chat-bubble ${escapeHtml(m.role)}">
+        ${escapeHtml(m.content)}
+      </div>`
+      )
+      .join("");
+    const log = $("designChatLog");
+    log.scrollTop = log.scrollHeight;
+  }
+
+  async function sendDesignChat(event) {
+    event.preventDefault();
+    if (!currentCrawlId) {
+      showError("No crawl selected yet.");
+      return;
+    }
+    const input = $("designChatInput");
+    const message = input.value.trim();
+    if (!message) return;
+
+    clearError();
+    input.value = "";
+    $("designChatSend").disabled = true;
+    $("designChatSend").textContent = "Thinking...";
+    $("designChatLog").insertAdjacentHTML(
+      "beforeend",
+      `<div class="chat-bubble user">${escapeHtml(message)}</div>
+       <div class="chat-bubble assistant">Working on it…</div>`
+    );
+    const log = $("designChatLog");
+    log.scrollTop = log.scrollHeight;
+
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${currentCrawlId}/design/chat`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        }
+      );
+      renderDesignChat(data);
+      if (data.mockups) {
+        renderMockups(data.mockups);
+      }
+      if (data.error) {
+        showError("Ollama unavailable for chat — used local rules. " + data.error);
+      }
+    } catch (error) {
+      console.error(error);
+      showError("Design chat failed: " + error.message);
+      await loadDesignChat(currentCrawlId);
+    } finally {
+      $("designChatSend").disabled = false;
+      $("designChatSend").textContent = "Send";
+      $("designChatInput").focus();
+    }
+  }
+
+  async function loadMockups(crawlId) {
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${crawlId}/mockups`
+      );
+      renderMockups(data);
+    } catch (error) {
+      $("mockups").innerHTML =
+        '<div class="empty">No mockups yet. Click Generate Mockups.</div>';
+      $("mockupMeta").textContent = "Local concepts";
+    }
+  }
+
+  function renderMockups(data) {
+    const images = data.images || [];
+    $("mockupMeta").textContent = [
+      data.backend || "concept",
+      data.domain || null,
+      `${images.length} images`,
+    ].filter(Boolean).join(" · ");
+
+    const note = data.ai_error
+      ? `${data.notes || ""}`
+      : (data.notes || "Local redesign concepts for sales direction.");
+
+    if (!images.length) {
+      $("mockups").innerHTML =
+        '<div class="empty">No mockup images found.</div>';
+      return;
+    }
+
+    $("mockups").innerHTML = `
+      <div class="mockup-grid">
+        ${images.map((img) => `
+          <div class="mockup-card">
+            <a href="/data/websites/${escapeHtml(data.domain)}/crawls/${escapeHtml(currentCrawlId)}/${escapeHtml(img.path)}" target="_blank" rel="noopener">
+              <img
+                src="/data/websites/${escapeHtml(data.domain)}/crawls/${escapeHtml(currentCrawlId)}/${escapeHtml(img.path)}?t=${Date.now()}"
+                alt="${escapeHtml(img.label || img.kind)}"
+              />
+            </a>
+            <div class="caption">${escapeHtml(img.label || img.kind)}</div>
+          </div>
+        `).join("")}
+      </div>
+      <div class="finding-meta" style="margin-top:14px;">
+        ${escapeHtml(note)}
+      </div>
+    `;
+  }
+
+  async function generateMockups() {
+    if (!currentCrawlId) {
+      showError("No crawl selected yet.");
+      return;
+    }
+
+    clearError();
+    const button = $("mockupBtn");
+    button.disabled = true;
+    button.textContent = "Rendering...";
+    $("mockups").innerHTML =
+      '<div class="loading">Generating AI website images (local TinySD, may take a few minutes on CPU)...</div>';
+
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${currentCrawlId}/mockups`,
+        { method: "POST" }
+      );
+      renderMockups(data);
+    } catch (error) {
+      console.error(error);
+      showError("Could not generate mockups: " + error.message);
+      $("mockups").innerHTML =
+        '<div class="empty">Mockup generation failed.</div>';
+    } finally {
+      button.disabled = false;
+      button.textContent = "Generate Mockups";
+    }
+  }
+
+  async function askBrain() {
+    if (!currentCrawlId) {
+      showError("No crawl selected yet.");
+      return;
+    }
+
+    clearError();
+    const button = $("brainBtn");
+    button.disabled = true;
+    button.textContent = "Thinking...";
+    $("recommendations").innerHTML =
+      '<div class="loading">Asking local Ollama brain...</div>';
+
+    try {
+      const data = await api(
+        `/api/websites/${websiteId}/crawls/${currentCrawlId}/recommendations`,
+        { method: "POST" }
+      );
+      renderRecommendations(data);
+      if (data.source === "rule_based_fallback" && data.error) {
+        showError(
+          "Ollama unavailable — showing rule-based fallback. " + data.error
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      showError("Could not get recommendations: " + error.message);
+      $("recommendations").innerHTML =
+        '<div class="empty">Brain request failed.</div>';
+    } finally {
+      button.disabled = false;
+      button.textContent = "Ask Brain";
+    }
+  }
+
+  function renderSeverity(data) {
+    const levels = [
+      ["high", "High"],
+      ["medium", "Medium"],
+      ["low", "Low"],
+      ["info", "Info"]
+    ];
+
+    const total =
+      Object.values(data)
+        .reduce((a, b) => a + Number(b || 0), 0);
+
+    $("severityBreakdown").innerHTML =
+      levels.map(([key, label]) => {
+        const value = Number(data[key] || 0);
+        const percentage =
+          total ? (value / total) * 100 : 0;
+
+        return `
+          <div class="breakdown-row">
+            <span>${label}</span>
+            <div class="bar">
+              <div
+                class="bar-fill bar-${key}"
+                style="width:${percentage}%">
+              </div>
+            </div>
+            <strong>${value}</strong>
+          </div>
+        `;
+      }).join("");
+  }
+
+  function renderCategories(data) {
+    const entries = Object.entries(data);
+
+    if (!entries.length) {
+      $("categories").innerHTML =
+        '<span class="card-subtitle">No findings</span>';
+      return;
+    }
+
+    $("categories").innerHTML =
+      entries.map(([category, count]) => `
+        <div class="category">
+          ${escapeHtml(category)}
+          <strong>${count}</strong>
+        </div>
+      `).join("");
+  }
+
+  async function loadComparison(a, b) {
+    const comparison = await api(
+      `/api/websites/${websiteId}/crawls/compare` +
+      `?crawl_a=${encodeURIComponent(a)}` +
+      `&crawl_b=${encodeURIComponent(b)}`
+    );
+
+    $("newFindings").textContent =
+      comparison.summary?.new ?? 0;
+
+    $("resolvedFindings").textContent =
+      comparison.summary?.resolved ?? 0;
+
+    $("unchangedFindings").textContent =
+      comparison.summary?.unchanged ?? 0;
+  }
+
+  function startPolling(crawlId) {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+    }
+
+    pollTimer = setInterval(async () => {
+      try {
+        const crawl = await api(
+          `/api/websites/${websiteId}/crawls/${crawlId}`
+        );
+
+        setStatus(crawl.status);
+        $("crawlStatus").textContent = crawl.status;
+
+        if (
+          crawl.status === "completed" ||
+          crawl.status === "failed"
+        ) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+          $("crawlBtn").disabled = false;
+          $("crawlBtn").textContent = "Run New Crawl";
+
+          if (crawl.status === "completed") {
+            await loadCrawl(crawlId);
+          } else if (crawl.error_message) {
+            showError("Crawl failed: " + crawl.error_message);
+          } else {
+            showError("Crawl failed. Check the server logs for details.");
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, 2000);
+  }
+
+  async function createCrawl() {
+    clearError();
+
+    if (!websiteId) {
+      showError("Select a website first.");
+      return;
+    }
+
+    const button = $("crawlBtn");
+
+    button.disabled = true;
+    button.textContent = "Starting...";
+
+    try {
+      const crawl = await api(
+        `/api/websites/${websiteId}/crawls`,
+        {
+          method: "POST"
+        }
+      );
+
+      currentCrawlId = crawl.id;
+      localStorage.setItem(STORAGE_KEYS.crawlId, currentCrawlId);
+
+      setStatus(crawl.status);
+
+      await onWebsiteChanged(false);
+
+      button.textContent = "Crawling...";
+
+      startPolling(crawl.id);
+
+    } catch (error) {
+      console.error(error);
+      showError(
+        "Could not start crawl: " + error.message
+      );
+
+      button.textContent = "Run New Crawl";
+      button.disabled = false;
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  
+
+  function setWorkspaceEmpty(isEmpty) {
+    const workspace = $("workspace");
+    const topbar = $("topbar");
+    const empty = $("emptyState");
+    const titleWrap = document.querySelector(".site-title");
+    if (workspace) workspace.classList.toggle("has-empty", isEmpty);
+    if (topbar) topbar.classList.toggle("has-site", !isEmpty);
+    if (empty) empty.classList.toggle("visible", isEmpty);
+    if (titleWrap) titleWrap.classList.toggle("empty-title", isEmpty);
+    if (isEmpty) {
+      const st = $("status");
+      if (st) st.className = "status";
+      if ($("statusText")) $("statusText").textContent = "Idle";
+    }
+  }
+
+  function openAddModal() {
+    const modal = $("addModal");
+    if (modal) modal.classList.add("open");
+  }
+
+  function closeAddModal() {
+    const modal = $("addModal");
+    if (modal) modal.classList.remove("open");
+  }
+
+  async function renameEntity(kind, id, currentName) {
+    const next = prompt(`Rename ${kind}`, currentName || "");
+    if (next == null) return;
+    const name = next.trim();
+    if (!name || name === currentName) return;
+    clearError();
+    try {
+      if (kind === "company") {
+        await api(`/api/companies/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name }),
+        });
+      } else {
+        await api(`/api/projects/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name }),
+        });
+      }
+      await bootstrapPickers();
+    } catch (error) {
+      showError(`Could not rename ${kind}: ` + error.message);
+    }
+  }
+
+  async function deleteEntity(kind, id, name) {
+    const label = name || kind;
+    const msg = kind === "company"
+      ? `Delete company "${label}"? Its projects stay as unassigned.`
+      : `Delete project "${label}"? This also removes its websites and crawls.`;
+    if (!confirm(msg)) return;
+    clearError();
+    try {
+      if (kind === "company") {
+        await api(`/api/companies/${id}`, { method: "DELETE" });
+        if (String(companyId) === String(id)) {
+          companyId = "";
+          localStorage.removeItem(STORAGE_KEYS.companyId);
+        }
+      } else {
+        await api(`/api/projects/${id}`, { method: "DELETE" });
+        if (String(projectId) === String(id)) {
+          projectId = "";
+          websiteId = "";
+          currentCrawlId = null;
+          localStorage.removeItem(STORAGE_KEYS.projectId);
+          localStorage.removeItem(STORAGE_KEYS.websiteId);
+          localStorage.removeItem(STORAGE_KEYS.crawlId);
+        }
+      }
+      await bootstrapPickers();
+    } catch (error) {
+      showError(`Could not delete ${kind}: ` + error.message);
+    }
+  }
+
+  function setMode(mode) {
+    document.querySelectorAll(".mode-tab").forEach((tab) => {
+      tab.classList.toggle("active", tab.dataset.mode === mode);
+    });
+    document.querySelectorAll(".mode-panel").forEach((panel) => {
+      panel.classList.toggle("active", panel.id === `mode-${mode}`);
+    });
+    localStorage.setItem("wi_mode", mode);
+  }
+
+  document.querySelectorAll(".mode-tab").forEach((tab) => {
+    tab.addEventListener("click", () => setMode(tab.dataset.mode));
+  });
+  setMode(localStorage.getItem("wi_mode") || "overview");
+
+  const sidebar = $("sidebar");
+  const sidebarToggle = $("sidebarToggle");
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener("click", () => sidebar.classList.toggle("open"));
+  }
+
+  $("companySelect").addEventListener("change", () => onCompanyChanged(true));
+  $("projectSelect").addEventListener("change", () => onProjectChanged(true));
+  $("websiteSelect").addEventListener("change", () => onWebsiteChanged(true));
+  $("crawlSelect").addEventListener("change", () => onCrawlChanged());
+  $("addCompanyForm").addEventListener("submit", addCompany);
+  $("addProjectForm").addEventListener("submit", addProject);
+  $("addWebsiteForm").addEventListener("submit", addWebsite);
+
+  ["openAddModal", "openAddModalBottom", "emptyAddBtn"].forEach((id) => {
+    const el = $(id);
+    if (el) el.addEventListener("click", openAddModal);
+  });
+  if ($("closeAddModal")) $("closeAddModal").addEventListener("click", closeAddModal);
+  if ($("addModal")) {
+    $("addModal").addEventListener("click", (event) => {
+      if (event.target === $("addModal")) closeAddModal();
+    });
+  }
+
+  $("portfolioTree").addEventListener("click", async (event) => {
+    const editBtn = event.target.closest(".portfolio-edit");
+    if (editBtn) {
+      event.preventDefault();
+      await renameEntity(editBtn.dataset.kind, editBtn.dataset.id, editBtn.dataset.name);
+      return;
+    }
+    const delBtn = event.target.closest(".portfolio-delete");
+    if (delBtn) {
+      event.preventDefault();
+      await deleteEntity(delBtn.dataset.kind, delBtn.dataset.id, delBtn.dataset.name);
+      return;
+    }
+    const btn = event.target.closest(".portfolio-open");
+    if (!btn) return;
+    clearError();
+    try {
+      await navigateToSelection(
+        btn.dataset.companyId || "",
+        btn.dataset.projectId || "",
+        btn.dataset.websiteId || "",
+        btn.dataset.crawlId || ""
+      );
+      if (window.innerWidth <= 860) sidebar.classList.remove("open");
+    } catch (error) {
+      showError("Could not open selection: " + error.message);
+    }
+  });
+
+  $("crawlBtn").addEventListener(
+    "click",
+    createCrawl
+  );
+
+  $("brainBtn").addEventListener("click", () => { setMode("brain"); askBrain(); });
+
+  $("mockupBtn").addEventListener("click", () => { setMode("design"); generateMockups(); });
+
+  $("proposalBtn").addEventListener("click", () => { setMode("proposal"); generateProposalDoc(); });
+
+  $("pdfBtn").addEventListener(
+    "click",
+    exportProposalPdf
+  );
+
+  $("designChatForm").addEventListener("submit", (e) => { setMode("design"); sendDesignChat(e); });
+
+  $("refreshBtn").addEventListener(
+    "click",
+    async () => {
+      try {
+        clearError();
+
+        $("refreshBtn").disabled = true;
+
+        await loadLatestCrawl();
+
+      } catch (error) {
+        console.error(error);
+
+        showError(
+          "Could not refresh dashboard: " +
+          error.message
+        );
+
+      } finally {
+        $("refreshBtn").disabled = false;
+      }
+    }
+  );
+
+
+  /*
+   * Initial load.
+   */
+  (async () => {
+    try {
+      await loadLatestCrawl();
+    } catch (error) {
+      console.error(error);
+
+      showError(
+        "Could not load dashboard: " +
+        error.message
+      );
+    }
+  })();
+</script>
+</body>
+</html>

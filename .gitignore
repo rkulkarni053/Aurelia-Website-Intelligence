@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Application data
+data/crawls/*
+data/screenshots/*
+data/reports/*
+data/websites/*
+
+# Local tool binaries (SiteOne Crawler, etc.)
+bin/
+
+# Keep directory structure
+!data/crawls/.gitkeep
+!data/screenshots/.gitkeep
+!data/reports/.gitkeep
+!data/websites/.gitkeep
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

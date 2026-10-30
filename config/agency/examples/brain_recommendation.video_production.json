@@ -1,0 +1,122 @@
+{
+  "kind": "brain_recommendation",
+  "approved_example": true,
+  "industry": "video_production_broadcast",
+  "meta": {
+    "note": "Gold Brain answer for video / OB / live-stream studios",
+    "references": [
+      "https://evp-website-one.vercel.app/",
+      "https://overexposed.tv/",
+      "https://outsidebroadcast.uk/",
+      "https://contestudios.com/clarity-in-business-copywriting/"
+    ]
+  },
+  "after": {
+    "site_story_summary": {
+      "business_type": "Video production & live broadcast studio",
+      "audience": "Brands, broadcasters, and event organisers who need production-grade video and live delivery",
+      "story": "A regional studio that owns the full path from brief to broadcast — outside broadcast, live streaming, corporate film, and commercials — with one crew and broadcast standards.",
+      "offer": "Outside broadcasting, live streaming, corporate video, TV commercials",
+      "tone": "cinematic, confident, production-grade",
+      "gaps": [
+        "Hero must not lead with an SEO niche title",
+        "Services should read as outcomes (sport, conference, launch) not only kit lists"
+      ]
+    },
+    "executive_summary": "This studio already has proof (years in market, OB and stream capability). The commercial gap is clarity on the first screen: who they hire for, what form of production fits, and one decisive CTA. Pitch a Growth engagement that tightens hero messaging, service cards, and enquiry conversion — keep the cinematic craft, remove SEO-title heroes and vague Contact CTAs.",
+    "priority_actions": [
+      {
+        "title": "Lead with a benefit promise, not the SEO page title",
+        "category": "content",
+        "impact": "high",
+        "effort": "low",
+        "why": "First-time buyers decide in seconds whether this is the crew for their live or film job.",
+        "how": "Replace browser-title heroes with a broadcast outcome line plus one primary CTA (e.g. Start a project).",
+        "opportunity_theme": "messaging"
+      },
+      {
+        "title": "Make services scannable as production forms",
+        "category": "ux",
+        "impact": "high",
+        "effort": "medium",
+        "why": "Buyers think in jobs (stadium OB, conference stream, launch film) — not long paragraphs.",
+        "how": "Four cards: Outside broadcast, Live streaming, Corporate film, Commercials — each with who it is for and a deep link.",
+        "opportunity_theme": "conversion"
+      },
+      {
+        "title": "Put proof next to the offer",
+        "category": "ux",
+        "impact": "medium",
+        "effort": "low",
+        "why": "Studios win on trust: years, return clients, resolution, crew continuity.",
+        "how": "Surface 20+ years / productions delivered / broadcast-quality near the hero or process rail.",
+        "opportunity_theme": "trust"
+      },
+      {
+        "title": "Keep media cinematic but light on mobile",
+        "category": "performance",
+        "impact": "high",
+        "effort": "medium",
+        "why": "Heavy heroes kill mobile enquiry rates even when desktop looks premium.",
+        "how": "Compressed still + optional reel on interaction; defer autoplay weight below the fold.",
+        "opportunity_theme": "performance"
+      }
+    ],
+    "quick_wins": [
+      "Rewrite H1 to a benefit promise",
+      "Change primary CTA to Start a project / Request a quote",
+      "Add three proof stats above the fold",
+      "Label services as forms of work (OB / Stream / Film / Commercial)"
+    ],
+    "strategic_improvements": [
+      "Cinematic homepage that matches studio craft without SEO-title heroes",
+      "Case-led portfolio path: sport OB → conference stream → brand film",
+      "Enquiry form that asks service type + budget band (as on strong studio sites)"
+    ],
+    "proposal_angles": [
+      "Growth package: messaging + conversion path + performance pass so enquiries rise without a full rebuild.",
+      "Optional Redesign: Dora-style cinematic landing grounded in real OB/stream/film offers."
+    ],
+    "content_suggestions": [
+      {
+        "area": "Hero headline",
+        "current": "Video Production Malta | Exclusive Video Productions",
+        "suggested": "Stories worth watching — broadcast-ready from brief to screen.",
+        "why": "Outcome + craft; never an SEO title with |."
+      },
+      {
+        "area": "Hero subcopy",
+        "current": "Video production company in Malta",
+        "suggested": "Outside broadcast, live streaming, corporate film, and commercials — one crew across Malta and Gozo.",
+        "why": "Names the forms buyers hire for (Over Exposed / OB UK pattern)."
+      },
+      {
+        "area": "Primary CTA",
+        "current": "Contact",
+        "suggested": "Start a project",
+        "why": "Specific next step beats Contact / Learn more (clarity copy practice)."
+      },
+      {
+        "area": "Services section",
+        "current": "Long service paragraphs",
+        "suggested": "Cards: Outside broadcasting · Live streaming · Corporate video · Television commercials",
+        "why": "Scannable forms of work convert better than walls of text."
+      },
+      {
+        "area": "About blurb",
+        "current": "",
+        "suggested": "Based in Il-Ħamrun with 20+ years on national live — the same people from plan to delivery.",
+        "why": "Location + tenure + continuity builds trust fast."
+      }
+    ],
+    "mockup_prompts": [
+      "Cinematic dark homepage for a Malta broadcast studio, benefit-led hero, Start a project CTA, four service cards",
+      "Mobile studio homepage with proof stats and a short enquiry form"
+    ],
+    "agent_next_steps": [
+      "Approve messaging + conversion opportunities",
+      "In Design chat: Build me a cinematic homepage for this studio",
+      "Accept Growth package when the demo matches the hero suggestion"
+    ]
+  }
+}

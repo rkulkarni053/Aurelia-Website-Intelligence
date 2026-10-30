@@ -1,0 +1,39 @@
+{
+  "kind": "content_suggestions",
+  "approved_example": true,
+  "meta": {
+    "note": "Universal hero/CTA patterns from clarity + studio/product references",
+    "references": [
+      "https://contestudios.com/clarity-in-business-copywriting/",
+      "https://www.base44.com/",
+      "https://evp-website-one.vercel.app/",
+      "https://overexposed.tv/"
+    ]
+  },
+  "after": {
+    "rules": [
+      "Hero headline = who + outcome in one breath — never SEO titles with | or –",
+      "Subcopy names the offer forms buyers hire for",
+      "Primary CTA is a specific next step (Start a project / Request a quote / Start building) — never Learn more alone",
+      "Services as scannable cards tied to jobs",
+      "Proof (years, metrics, quotes) sits near the ask"
+    ],
+    "content_suggestions": [
+      {
+        "area": "Hero headline",
+        "suggested": "Name the result the buyer wants — craft optional, clarity mandatory.",
+        "why": "Clarity beats clever taglines on first visit."
+      },
+      {
+        "area": "Primary CTA",
+        "suggested": "Start a project",
+        "why": "Tells the visitor what happens next."
+      },
+      {
+        "area": "Hero subcopy",
+        "suggested": "One sentence: forms of work + geography or audience.",
+        "why": "Removes guesswork before the scroll."
+      }
+    ]
+  }
+}
